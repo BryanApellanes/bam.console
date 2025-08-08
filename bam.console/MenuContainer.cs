@@ -126,6 +126,10 @@ namespace Bam.Console
                 }
 
                 object? result = method.Invoke(instance, MethodArgumentProvider.GetMethodArguments(method));
+                if (result is Task task)
+                {
+                    task.Wait();
+                }
                 SuccessReporter.ReportSuccess($"{itemDisplayName} completed successfully.");
                 return new InputCommandResult()
                 {
