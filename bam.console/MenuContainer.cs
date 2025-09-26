@@ -26,6 +26,9 @@ namespace Bam.Console
             MethodArgumentProvider = new DependencyProviderMethodArgumentProvider(dependencyProvider);
         }
 
+        /// <summary>
+        /// Gets or set the DependencyProvider
+        /// </summary>
         protected IDependencyProvider? DependencyProvider
         {
             get;
