@@ -14,5 +14,7 @@ namespace Bam.Console
         ArgumentParseStatus Status { get; set; }
 
         bool Contains(string argumentToLookFor);
+
+        bool Contains(string argumentToLookFor, out string? argument);
     }
 }

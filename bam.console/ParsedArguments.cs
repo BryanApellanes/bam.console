@@ -129,6 +129,13 @@ namespace Bam.Console
             return parsedArguments.ContainsKey(argumentToLookFor);
         }
 
+        public bool Contains(string argumentToLookFor, out string? argument)
+        {
+            bool result = parsedArguments.ContainsKey(argumentToLookFor);
+            argument = result ? parsedArguments[argumentToLookFor] : null;
+            return result;
+        }
+
         public string Message { get; set; }
         public ArgumentParseStatus Status { get; set; }
         public string[] OriginalStrings { get; private set; }
