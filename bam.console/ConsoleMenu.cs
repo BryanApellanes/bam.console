@@ -11,7 +11,7 @@ namespace Bam.Console
 
         public ConsoleMenu(string name): base(name)
         {
-            this.Selector = "cm";
+            this.Selector = name.CamelCase().CaseAcronym();
         }
     }
 }

@@ -219,6 +219,9 @@ namespace Bam.Console
             }
         }
 
+        /// <summary>
+        /// Gets or sets thhe parsed arguments passed om the command line.
+        /// </summary>
         public IParsedArguments Arguments
         {
             get;
