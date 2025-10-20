@@ -60,7 +60,7 @@ namespace Bam.Console
             return DependencyProvider.Get<T>();
         }
 
-        [InputCommand("all", "run all listed commands")]
+        [InputCommand("all", "run all items on the current menu")]
         public InputCommandResults RunAllItems(IMenuManager menuManager)
         {
             if (DependencyProvider == null)
@@ -111,6 +111,64 @@ namespace Bam.Console
                 Task.WaitAll(tasks.ToArray());
             }
             
+            return results;
+        }
+
+        [InputCommand("every", "run every item on every menu")]
+        public InputCommandResults RunEveryItemFromAllMenus(IMenuManager menuManager)
+        {
+            if (DependencyProvider == null)
+            {
+                throw new InvalidOperationException($"{nameof(DependencyProvider)} not set");
+            }
+
+            if (menuManager == null)
+            {
+                throw new InvalidOperationException($"{nameof(menuManager)} not specified.");
+            }
+
+            if (menuManager.CurrentMenu == null)
+            {
+                throw new InvalidOperationException($"Current menu is not set.");
+            }
+
+            InputCommandResults results = new InputCommandResults();
+            foreach(IMenu menu in menuManager.Menus)
+            {
+                foreach (IMenuItem item in menu.Items)
+                {
+                    if (item != null && item.MethodInfo != null)
+                    {
+                        object? instance = null;
+                        if (!item.MethodInfo.IsStatic && item.MethodInfo.DeclaringType != null)
+                        {
+                            instance = DependencyProvider.Get(item.MethodInfo.DeclaringType);
+                        }
+                        if (instance == null && item.Instance != null)
+                        {
+                            instance = item.Instance;
+                        }
+
+                        results.AddResult(TryInvoke(item.DisplayName, item.MethodInfo, instance));
+                    }
+                }
+
+            }
+
+            List<Task> tasks = new List<Task>();
+            foreach (IInputCommandResult commandResult in results.Results)
+            {
+                if (commandResult.InvocationResult is Task task)
+                {
+                    tasks.Add(task);
+                }
+            }
+
+            if (tasks.Count > 0)
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+
             return results;
         }
 
