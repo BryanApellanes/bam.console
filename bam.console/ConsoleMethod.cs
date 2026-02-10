@@ -135,7 +135,11 @@ namespace Bam.Console
             }
             catch (Exception ex)
             {
-                throw ex.GetInnerException();
+                Exception inner = ex.GetInnerException();
+#if DEBUG
+                System.Console.Error.WriteLine(inner.ToString());
+#endif
+                throw inner;
             }
 
             return result;
