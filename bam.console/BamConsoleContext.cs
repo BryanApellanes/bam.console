@@ -93,11 +93,9 @@ namespace Bam.Console
             this.AddValidArgument("v", true, description: "Show version information");
             this.AddValidArgument("i", true, description: "Run interactively");
 
-            // TODO: extract/encapsulate a IConsoleActionProvider discovery mechanism 
             this.AddValidArgument("ut", true, description: "Run all unit tests");
             this.AddValidArgument("it", true, description: "Run all integration tests");
             this.AddValidArgument("spec", true, description: "Run all specification tests");
-            // -/ TODO: extract/encapsulate a IConsoleActionProvider discovery mechanism 
 
             this.ParseArgs(args);
 
@@ -120,9 +118,13 @@ namespace Bam.Console
                 {
                     Exit(0);
                 }
+                if (ExecuteTestSwitches(this.Logger, this.Arguments))
+                {
+                    Exit(0);
+                }
             }
         }
-        
+
         protected static void StaticInit(string[] args, Action preInit, ConsoleArgsParsedDelegate? parseErrorHandler)
         {
             Current.ArgsParsedError += parseErrorHandler;
@@ -133,11 +135,9 @@ namespace Bam.Console
             Current.AddValidArgument("v", true, description: "Show version information");
             Current.AddValidArgument("i", true, description: "Run interactively");
 
-            // TODO: extract/encapsulate a IConsoleActionProvider discovery mechanism 
             Current.AddValidArgument("ut", true, description: "Run all unit tests");
             Current.AddValidArgument("it", true, description: "Run all integration tests");
             Current.AddValidArgument("spec", true, description: "Run all specification tests");
-            // -/ TODO: extract/encapsulate a IConsoleActionProvider discovery mechanism 
 
             Current.ParseArgs(args);
 
@@ -157,6 +157,10 @@ namespace Bam.Console
             if (Current.Arguments.Length > 0 && !Current.Arguments.Contains("i"))
             {
                 if (ExecuteSwitches(Current.Logger, Current.Arguments))
+                {
+                    Exit(0);
+                }
+                if (ExecuteTestSwitches(Current.Logger, Current.Arguments))
                 {
                     Exit(0);
                 }
@@ -407,6 +411,23 @@ File Version: {1}
             }
 
             return toExecute[0];
+        }
+
+        protected static bool ExecuteTestSwitches(ILogger logger, IParsedArguments arguments)
+        {
+            Assembly? entryAssembly = Assembly.GetEntryAssembly();
+            if (entryAssembly == null)
+            {
+                return false;
+            }
+
+            if (Current.ServiceRegistry.TryGet<ITestSwitchExecutor>(out var executor))
+            {
+                return executor.ExecuteTestSwitches(entryAssembly, logger, arguments);
+            }
+
+            logger.Warning("No ITestSwitchExecutor registered; ensure bam.test is referenced");
+            return false;
         }
 
         private static void CheckDebug(IParsedArguments arguments)
