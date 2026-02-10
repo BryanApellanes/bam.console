@@ -128,6 +128,10 @@ namespace Bam.Console
                     }
                 }
                 result = Method.Invoke(Provider, Parameters);
+                if (result is Task task)
+                {
+                    task.GetAwaiter().GetResult();
+                }
             }
             catch (Exception ex)
             {
