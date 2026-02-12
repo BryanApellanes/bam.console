@@ -97,6 +97,10 @@ namespace Bam.Console
             this.AddValidArgument("it", true, description: "Run all integration tests");
             this.AddValidArgument("spec", true, description: "Run all specification tests");
 
+            this.AddValidArgument("coverage", true, description: "Enable code coverage collection via dotnet-coverage");
+            this.AddValidArgument("coverage-output", false, description: "Coverage output file path", valueExample: "coverage.cobertura.xml");
+            this.AddValidArgument("coverage-format", false, description: "Coverage output format", valueExample: "cobertura");
+
             this.ParseArgs(args);
 
             if (this.Arguments.Contains("?"))
@@ -138,6 +142,10 @@ namespace Bam.Console
             Current.AddValidArgument("ut", true, description: "Run all unit tests");
             Current.AddValidArgument("it", true, description: "Run all integration tests");
             Current.AddValidArgument("spec", true, description: "Run all specification tests");
+
+            Current.AddValidArgument("coverage", true, description: "Enable code coverage collection via dotnet-coverage");
+            Current.AddValidArgument("coverage-output", false, description: "Coverage output file path", valueExample: "coverage.cobertura.xml");
+            Current.AddValidArgument("coverage-format", false, description: "Coverage output format", valueExample: "cobertura");
 
             Current.ParseArgs(args);
 
