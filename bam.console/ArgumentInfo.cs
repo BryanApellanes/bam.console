@@ -1,5 +1,5 @@
 /*
-	Copyright © Bryan Apellanes 2015  
+	Copyright © Bryan Apellanes 2015
 */
 
 namespace Bam.Console
@@ -42,7 +42,7 @@ namespace Bam.Console
 
         public static ArgumentInfo[] FromArgs(string[] args, bool allowNulls = true)
         {
-            return FromArgs(ParsedArguments.DefaultArgPrefix, args, allowNulls);
+            return FromArgs(ArgumentFormatOptions.Default, args, allowNulls);
         }
 
         /// <summary>
@@ -52,16 +52,21 @@ namespace Bam.Console
         /// <returns></returns>
         public static ArgumentInfo[] FromArgs(string prefix, string[] args, bool allowNulls)
         {
+            return FromArgs(new ArgumentFormatOptions(prefix, ParsedArguments.ValueDivider), args, allowNulls);
+        }
+
+        public static ArgumentInfo[] FromArgs(ArgumentFormatOptions options, string[] args, bool allowNulls = true)
+        {
             List<ArgumentInfo> results = new List<ArgumentInfo>();
             foreach (string arg in args)
             {
-                if (!arg.StartsWith(prefix))
+                if (!arg.StartsWith(options.Prefix))
                 {
                     Message.PrintLine("Unrecognized argument: {0}", ConsoleColor.Yellow, arg);
                     continue;
                 }
 
-                string name = arg.TruncateFront(prefix.Length).ReadUntil(ParsedArguments.ValueDivider);
+                string name = arg.TruncateFront(options.Prefix.Length).ReadUntil(options.ValueSeparator);
                 results.Add(new ArgumentInfo(name, allowNulls));
             }
 

@@ -1,13 +1,13 @@
 /*
-	Copyright © Bryan Apellanes 2015  
+	Copyright © Bryan Apellanes 2015
 */
 
 namespace Bam.Console
 {
 
     /// <summary>
-    /// Class used to parse command line arguments.  All arguments are 
-    /// assumed to be in the format --&lt;name&gt;:&lt;value&gt; or an ArgumentException is thrown 
+    /// Class used to parse command line arguments.  All arguments are
+    /// assumed to be in the format --&lt;name&gt;:&lt;value&gt; or an ArgumentException is thrown
     /// during parsing.
     /// </summary>
     public class ParsedArguments : IParsedArguments
@@ -15,12 +15,14 @@ namespace Bam.Console
         public const string DefaultArgPrefix = "--";
         public const char ValueDivider = '=';
 
+        public static ArgumentFormatOptions DefaultOptions => ArgumentFormatOptions.Default;
+
         public ParsedArguments(string[] args, string[] validArgNames)
             : this(args, ArgumentInfo.FromStringArray(validArgNames))
         {
         }
 
-        public ParsedArguments(string[] args, ArgumentInfo[] validArgumentInfos) : this(DefaultArgPrefix, args, validArgumentInfos)
+        public ParsedArguments(string[] args, ArgumentInfo[] validArgumentInfos) : this(DefaultOptions, args, validArgumentInfos)
         {
         }
 
@@ -31,11 +33,16 @@ namespace Bam.Console
         {
         }
 
-        public ParsedArguments(string[] args) : this(DefaultArgPrefix, args, ArgumentInfo.FromArgs(args))
+        public ParsedArguments(string[] args) : this(DefaultOptions, args, ArgumentInfo.FromArgs(DefaultOptions, args))
         {
         }
 
         public ParsedArguments(string argPrefix, string[] args, ArgumentInfo[] validArgumentInfos)
+            : this(new ArgumentFormatOptions(argPrefix, ValueDivider), args, validArgumentInfos)
+        {
+        }
+
+        public ParsedArguments(ArgumentFormatOptions options, string[] args, ArgumentInfo[] validArgumentInfos)
         {
             OriginalStrings = args;
             parsedArguments = new Dictionary<string, string>();
@@ -51,24 +58,24 @@ namespace Bam.Console
             {
                 string arg = argument.Trim();
 
-                if (!arg.StartsWith(argPrefix) || !(arg.Length > 1))
+                if (!arg.StartsWith(options.Prefix) || !(arg.Length > 1))
                 {
                     Message = $"Unrecognized argument format: {arg}\r\n\r\nAll Args:\r\n{string.Join("\r\n", args)}";
                     Status = ArgumentParseStatus.Error;
                 }
                 else
                 {
-                    string[] nameValue = arg.Substring(argPrefix.Length, arg.Length - argPrefix.Length).Split(new string[] { ValueDivider.ToString() }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] nameValue = arg.Substring(options.Prefix.Length, arg.Length - options.Prefix.Length).Split(new string[] { options.ValueSeparator.ToString() }, StringSplitOptions.RemoveEmptyEntries);
                     string name = string.Empty;
                     if (nameValue.Length > 0)
                     {
                         name = nameValue[0];
                     }
 
-                    // allow {ValueDivider} in arg value
+                    // allow {ValueSeparator} in arg value
                     if (nameValue.Length > 2)
                     {
-                        int startIndex = arg.IndexOf(ValueDivider, StringComparison.Ordinal) + 1;
+                        int startIndex = arg.IndexOf(options.ValueSeparator, StringComparison.Ordinal) + 1;
                         nameValue = new string[] { name, arg.Substring(startIndex, arg.Length - startIndex) };
                     }
 

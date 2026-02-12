@@ -286,6 +286,7 @@ File Version: {1}
         {
             ServiceRegistry serviceRegistry = new ServiceRegistry()
                 .For<IBamContext>().Use(this)
+                .For<ArgumentFormatOptions>().Use(ArgumentFormatOptions.Default)
                 .For<IArgumentParser>().Use<DefaultArgumentParser>()
                 .For<IConfigurationProvider>().Use(new DefaultConfigurationProvider())
                 .For<IApplicationNameProvider>().Use(new ProcessApplicationNameProvider())
