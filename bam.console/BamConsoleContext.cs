@@ -100,6 +100,7 @@ namespace Bam.Console
             this.AddValidArgument("coverage", true, description: "Enable code coverage collection via dotnet-coverage");
             this.AddValidArgument("coverage-output", false, description: "Coverage output file path", valueExample: "coverage.cobertura.xml");
             this.AddValidArgument("coverage-format", false, description: "Coverage output format", valueExample: "cobertura");
+            this.AddValidArgument("coverage-include", false, description: "Semicolon-separated module include patterns for coverage; use * for no filtering", valueExample: ".*[/\\\\]bam[.].*[.]dll$");
 
             this.ParseArgs(args);
 
@@ -146,6 +147,7 @@ namespace Bam.Console
             Current.AddValidArgument("coverage", true, description: "Enable code coverage collection via dotnet-coverage");
             Current.AddValidArgument("coverage-output", false, description: "Coverage output file path", valueExample: "coverage.cobertura.xml");
             Current.AddValidArgument("coverage-format", false, description: "Coverage output format", valueExample: "cobertura");
+            Current.AddValidArgument("coverage-include", false, description: "Semicolon-separated module include patterns for coverage; use * for no filtering", valueExample: ".*[/\\\\]bam[.].*[.]dll$");
 
             Current.ParseArgs(args);
 
