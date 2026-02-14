@@ -5,9 +5,11 @@ namespace Bam.Console
         public static readonly string[] AllowedPrefixes = { "--", "-", "/" };
         public static readonly char[] AllowedSeparators = { '=', ':' };
 
-        public static ArgumentFormatOptions Default { get; } = new("--", '=');
+        public static ArgumentFormatOptions Default { get; } = RuntimeSettings.IsWindows
+            ? new ArgumentFormatOptions("/", '=')
+            : new ArgumentFormatOptions("--", ':');
 
-        public ArgumentFormatOptions() : this("--", '=') { }
+        public ArgumentFormatOptions() : this(Default.Prefix, Default.ValueSeparator) { }
 
         public ArgumentFormatOptions(string prefix, char valueSeparator)
         {
@@ -21,6 +23,7 @@ namespace Bam.Console
         }
 
         public string Prefix { get; set; }
+        public string ShortPrefix { get; set; } = "-";
         public char ValueSeparator { get; set; }
     }
 }

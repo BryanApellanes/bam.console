@@ -334,6 +334,11 @@ File Version: {1}
                         AddValidArgument(attribute.OptionName, true, true, attribute.Description, attribute.ValueExample);
                     }
 
+                    if (!string.IsNullOrEmpty(attribute.OptionShortName))
+                    {
+                        AddValidArgument(attribute.OptionShortName.ToLowerInvariant(), true, description: $"{attribute.Description}; short for {attribute.OptionName}", valueExample: attribute.ValueExample);
+                    }
+
                     AddValidArgument(method.Name.CamelCase(), true, true, attribute.Description, attribute.ValueExample);
                 }
             }
@@ -403,6 +408,7 @@ File Version: {1}
                     if (
                         consoleAction.OptionName.Or("").Equals(commandLineSwitch) ||
                         consoleAction.OptionName.CaseAcronym().ToLowerInvariant().Or("").Equals(commandLineSwitch) ||
+                        consoleAction.OptionShortName.Or("").Equals(commandLineSwitch, StringComparison.OrdinalIgnoreCase) ||
                         method.Name.CamelCase().Equals(commandLineSwitch) ||
                         method.Name.CamelCase().CaseAcronym().ToLowerInvariant().Equals(commandLineSwitch)
                         )

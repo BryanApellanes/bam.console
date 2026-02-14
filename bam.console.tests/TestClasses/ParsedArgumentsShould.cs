@@ -5,10 +5,22 @@ namespace Bam.Console.Tests.TestClasses;
 [UnitTestMenu("ParsedArgumentsShould", "pas")]
 public class ParsedArgumentsShould : UnitTestMenuContainer
 {
+    private static readonly ArgumentFormatOptions _doubleDashEquals = new("--", '=');
+
+    private static ParsedArguments Parse(string[] args)
+    {
+        return new ParsedArguments(_doubleDashEquals, args, ArgumentInfo.FromArgs(_doubleDashEquals, args));
+    }
+
+    private static ParsedArguments Parse(string[] args, ArgumentInfo[] validArgs)
+    {
+        return new ParsedArguments(_doubleDashEquals, args, validArgs);
+    }
+
     [UnitTest]
     public void ParseStandardArgs()
     {
-        When.A<ParsedArguments>("parses --name=value", () => new ParsedArguments(new[] { "--name=value" }), (parsed) =>
+        When.A<ParsedArguments>("parses --name=value", () => Parse(new[] { "--name=value" }), (parsed) =>
         {
             return parsed;
         })
@@ -26,7 +38,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     [UnitTest]
     public void ParseMultipleArgs()
     {
-        When.A<ParsedArguments>("parses multiple arguments", () => new ParsedArguments(new[] { "--a=1", "--b=2" }), (parsed) =>
+        When.A<ParsedArguments>("parses multiple arguments", () => Parse(new[] { "--a=1", "--b=2" }), (parsed) =>
         {
             return parsed;
         })
@@ -47,7 +59,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void ParseNullValueArg()
     {
         When.A<ParsedArguments>("parses --flag with AllowNullValue=true",
-            () => new ParsedArguments(
+            () => Parse(
                 new[] { "--flag" },
                 new[] { new ArgumentInfo("flag", true) }),
             (parsed) =>
@@ -69,7 +81,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void RejectNullValueWhenNotAllowed()
     {
         When.A<ParsedArguments>("rejects --flag with AllowNullValue=false",
-            () => new ParsedArguments(
+            () => Parse(
                 new[] { "--flag" },
                 new[] { new ArgumentInfo("flag", false) }),
             (parsed) =>
@@ -90,7 +102,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void HandleValueContainingSeparator()
     {
         When.A<ParsedArguments>("handles value containing separator",
-            () => new ParsedArguments(new[] { "--url=http://x=y" }),
+            () => Parse(new[] { "--url=http://x=y" }),
             (parsed) =>
             {
                 return parsed;
@@ -110,7 +122,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void ReportErrorOnUnrecognizedFormat()
     {
         When.A<ParsedArguments>("reports error on unrecognized format",
-            () => new ParsedArguments(new[] { "badarg" }),
+            () => Parse(new[] { "badarg" }),
             (parsed) =>
             {
                 return parsed;
@@ -129,7 +141,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void OverwriteDuplicateArgs()
     {
         When.A<ParsedArguments>("overwrites duplicate arguments",
-            () => new ParsedArguments(new[] { "--x=1", "--x=2" }),
+            () => Parse(new[] { "--x=1", "--x=2" }),
             (parsed) =>
             {
                 return parsed;
@@ -149,7 +161,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void ContainsReturnsTrueForExistingArg()
     {
         When.A<ParsedArguments>("Contains returns true for existing arg",
-            () => new ParsedArguments(new[] { "--name=value" }),
+            () => Parse(new[] { "--name=value" }),
             (parsed) =>
             {
                 return parsed.Contains("name");
@@ -168,7 +180,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void ContainsReturnsFalseForMissingArg()
     {
         When.A<ParsedArguments>("Contains returns false for missing arg",
-            () => new ParsedArguments(new[] { "--name=value" }),
+            () => Parse(new[] { "--name=value" }),
             (parsed) =>
             {
                 return parsed.Contains("missing");
@@ -187,7 +199,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void ContainsOutOverloadReturnsValue()
     {
         When.A<ParsedArguments>("Contains out overload returns value",
-            () => new ParsedArguments(new[] { "--name=hello" }),
+            () => Parse(new[] { "--name=hello" }),
             (parsed) =>
             {
                 parsed.Contains("name", out string? val);
@@ -278,7 +290,7 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     public void EnsureArgumentThrowsWhenMissing()
     {
         When.A<ParsedArguments>("EnsureArgument throws when missing",
-            () => new ParsedArguments(new[] { "--name=value" }),
+            () => Parse(new[] { "--name=value" }),
             (parsed) =>
             {
                 parsed.EnsureArgument("missing");
@@ -295,10 +307,59 @@ public class ParsedArgumentsShould : UnitTestMenuContainer
     }
 
     [UnitTest]
+    public void ParseShortPrefixArgs()
+    {
+        When.A<ParsedArguments>("parses short prefix -flag",
+            () =>
+            {
+                ArgumentFormatOptions options = ArgumentFormatOptions.Default;
+                return new ParsedArguments(options, new[] { "-flag" }, new[] { new ArgumentInfo("flag", true) });
+            },
+            (parsed) =>
+            {
+                return parsed;
+            })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            ParsedArguments result = because.ResultAs<ParsedArguments>();
+            because.ItsTrue("status is Success", result.Status == ArgumentParseStatus.Success);
+            because.ItsTrue("flag was parsed", result.Contains("flag"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void ParseMixedPrefixArgs()
+    {
+        When.A<ParsedArguments>("parses mixed full and short prefix args",
+            () =>
+            {
+                ArgumentFormatOptions options = new ArgumentFormatOptions("--", '=');
+                return new ParsedArguments(options, new[] { "--name=value", "-f" }, new[] { new ArgumentInfo("name", false), new ArgumentInfo("f", true) });
+            },
+            (parsed) =>
+            {
+                return parsed;
+            })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            ParsedArguments result = because.ResultAs<ParsedArguments>();
+            because.ItsTrue("status is Success", result.Status == ArgumentParseStatus.Success);
+            because.ItsTrue("name has correct value", result["name"] == "value");
+            because.ItsTrue("f was parsed", result.Contains("f"));
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
     public void EnsureArgumentValueThrowsWhenEmpty()
     {
         When.A<ParsedArguments>("EnsureArgumentValue throws on null-value arg",
-            () => new ParsedArguments(
+            () => Parse(
                 new[] { "--flag" },
                 new[] { new ArgumentInfo("flag", true) }),
             (parsed) =>

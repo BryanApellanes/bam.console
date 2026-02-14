@@ -57,16 +57,32 @@ namespace Bam.Console
 
         public static ArgumentInfo[] FromArgs(ArgumentFormatOptions options, string[] args, bool allowNulls = true)
         {
+            // Accept all allowed prefixes plus the short prefix, longest first
+            // so "--foo" matches "--" before "-"
+            string[] prefixes = new HashSet<string>(ArgumentFormatOptions.AllowedPrefixes) { options.ShortPrefix }
+                .OrderByDescending(p => p.Length)
+                .ToArray();
+
             List<ArgumentInfo> results = new List<ArgumentInfo>();
             foreach (string arg in args)
             {
-                if (!arg.StartsWith(options.Prefix))
+                string? matchedPrefix = null;
+                foreach (string p in prefixes)
+                {
+                    if (arg.StartsWith(p))
+                    {
+                        matchedPrefix = p;
+                        break;
+                    }
+                }
+
+                if (matchedPrefix == null)
                 {
                     Message.PrintLine("Unrecognized argument: {0}", ConsoleColor.Yellow, arg);
                     continue;
                 }
 
-                string name = arg.TruncateFront(options.Prefix.Length).ReadUntil(options.ValueSeparator);
+                string name = arg.TruncateFront(matchedPrefix.Length).ReadUntil(options.ValueSeparator);
                 results.Add(new ArgumentInfo(name, allowNulls));
             }
 

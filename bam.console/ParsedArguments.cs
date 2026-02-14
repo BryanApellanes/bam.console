@@ -12,8 +12,8 @@ namespace Bam.Console
     /// </summary>
     public class ParsedArguments : IParsedArguments
     {
-        public const string DefaultArgPrefix = "--";
-        public const char ValueDivider = '=';
+        public static string DefaultArgPrefix => ArgumentFormatOptions.Default.Prefix;
+        public static char ValueDivider => ArgumentFormatOptions.Default.ValueSeparator;
 
         public static ArgumentFormatOptions DefaultOptions => ArgumentFormatOptions.Default;
 
@@ -54,18 +54,34 @@ namespace Bam.Console
             }
             ArgumentInfoHash validArguments = new ArgumentInfoHash(validArgumentInfos);
 
+            // Accept all allowed prefixes plus the short prefix, longest first
+            // so "--foo" matches "--" before "-"
+            string[] prefixes = new HashSet<string>(ArgumentFormatOptions.AllowedPrefixes) { options.ShortPrefix }
+                .OrderByDescending(p => p.Length)
+                .ToArray();
+
             foreach (string argument in args)
             {
                 string arg = argument.Trim();
 
-                if (!arg.StartsWith(options.Prefix) || !(arg.Length > 1))
+                string? matchedPrefix = null;
+                foreach (string p in prefixes)
+                {
+                    if (arg.StartsWith(p) && arg.Length > p.Length)
+                    {
+                        matchedPrefix = p;
+                        break;
+                    }
+                }
+
+                if (matchedPrefix == null)
                 {
                     Message = $"Unrecognized argument format: {arg}\r\n\r\nAll Args:\r\n{string.Join("\r\n", args)}";
                     Status = ArgumentParseStatus.Error;
                 }
                 else
                 {
-                    string[] nameValue = arg.Substring(options.Prefix.Length, arg.Length - options.Prefix.Length).Split(new string[] { options.ValueSeparator.ToString() }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] nameValue = arg.Substring(matchedPrefix.Length, arg.Length - matchedPrefix.Length).Split(new string[] { options.ValueSeparator.ToString() }, StringSplitOptions.RemoveEmptyEntries);
                     string name = string.Empty;
                     if (nameValue.Length > 0)
                     {

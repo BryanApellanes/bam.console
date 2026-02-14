@@ -16,8 +16,33 @@ public class ArgumentFormatOptionsShould : UnitTestMenuContainer
         .ShouldPass(because =>
         {
             ArgumentFormatOptions result = because.ResultAs<ArgumentFormatOptions>();
-            because.ItsTrue("default prefix is '--'", result.Prefix == "--");
-            because.ItsTrue("default value separator is '='", result.ValueSeparator == '=');
+            if (RuntimeSettings.IsWindows)
+            {
+                because.ItsTrue("default prefix is '/' on Windows", result.Prefix == "/");
+                because.ItsTrue("default value separator is '=' on Windows", result.ValueSeparator == '=');
+            }
+            else
+            {
+                because.ItsTrue("default prefix is '--' on non-Windows", result.Prefix == "--");
+                because.ItsTrue("default value separator is ':' on non-Windows", result.ValueSeparator == ':');
+            }
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void ShortPrefixIsAlwaysDash()
+    {
+        When.A<ArgumentFormatOptions>("ShortPrefix is always '-'", () => ArgumentFormatOptions.Default, (options) =>
+        {
+            return options;
+        })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            ArgumentFormatOptions result = because.ResultAs<ArgumentFormatOptions>();
+            because.ItsTrue("ShortPrefix is '-'", result.ShortPrefix == "-");
         })
         .SoBeHappy()
         .UnlessItFailed();
@@ -28,9 +53,10 @@ public class ArgumentFormatOptionsShould : UnitTestMenuContainer
     {
         When.A<ArgumentFormatOptions>("accepts all valid prefixes", (defaultOptions) =>
         {
+            ArgumentFormatOptions doubleDash = new ArgumentFormatOptions("--", '=');
             ArgumentFormatOptions singleDash = new ArgumentFormatOptions("-", '=');
             ArgumentFormatOptions slash = new ArgumentFormatOptions("/", '=');
-            return new object[] { defaultOptions, singleDash, slash };
+            return new object[] { doubleDash, singleDash, slash };
         })
         .TheTest
         .ShouldPass(because =>
@@ -52,8 +78,9 @@ public class ArgumentFormatOptionsShould : UnitTestMenuContainer
     {
         When.A<ArgumentFormatOptions>("accepts all valid separators", (defaultOptions) =>
         {
+            ArgumentFormatOptions equals = new ArgumentFormatOptions("--", '=');
             ArgumentFormatOptions colon = new ArgumentFormatOptions("--", ':');
-            return new object[] { defaultOptions, colon };
+            return new object[] { equals, colon };
         })
         .TheTest
         .ShouldPass(because =>
