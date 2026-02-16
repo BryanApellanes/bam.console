@@ -140,7 +140,7 @@ namespace Bam.Console
             this.AddValidArgument("i", true, description: "Run interactively");
 
             this.AddValidArgument("ut", true, description: "Run all unit tests");
-            this.AddValidArgument("it", true, description: "Run all integration tests");
+            this.AddValidArgument("it", true, description: "Run integration tests; optionally specify a group selector to filter (e.g. --it:ms)");
             this.AddValidArgument("spec", true, description: "Run all specification tests");
 
             this.AddValidArgument("coverage", true, description: "Enable code coverage collection via dotnet-coverage");
@@ -187,7 +187,7 @@ namespace Bam.Console
             Current.AddValidArgument("i", true, description: "Run interactively");
 
             Current.AddValidArgument("ut", true, description: "Run all unit tests");
-            Current.AddValidArgument("it", true, description: "Run all integration tests");
+            Current.AddValidArgument("it", true, description: "Run integration tests; optionally specify a group selector to filter (e.g. --it:ms)");
             Current.AddValidArgument("spec", true, description: "Run all specification tests");
 
             Current.AddValidArgument("coverage", true, description: "Enable code coverage collection via dotnet-coverage");
