@@ -5,14 +5,20 @@ using Bam.DependencyInjection;
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Abstract base class for menu containers that provide dependency injection, method invocation, and input command execution for console menus.
+    /// </summary>
     public abstract class MenuContainer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MenuContainer"/> class.
+        /// </summary>
         public MenuContainer() { }
 
         /// <summary>
-        /// Create a new MenuContainer using the specified dependency provider.
+        /// Initializes a new instance of the <see cref="MenuContainer"/> class using the specified dependency provider.
         /// </summary>
-        /// <param name="dependencyProvider"></param>
+        /// <param name="dependencyProvider">The dependency provider used for service resolution.</param>
         public MenuContainer(IDependencyProvider dependencyProvider)
         // Note that this uses service locator specifically to empower a test writer
         // to manipulate the state of the container.
@@ -46,10 +52,10 @@ namespace Bam.Console
         protected ISuccessReporter? SuccessReporter => DependencyProvider?.Get<ISuccessReporter>();
 
         /// <summary>
-        /// Get a configured instance of the specified generic type T.
+        /// Gets a configured instance of the specified type from the dependency provider.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
+        /// <typeparam name="T">The type of instance to resolve.</typeparam>
+        /// <returns>The resolved instance of <typeparamref name="T"/>.</returns>
         public T Get<T>()
         {
             if (DependencyProvider == null)
@@ -60,6 +66,11 @@ namespace Bam.Console
             return DependencyProvider.Get<T>();
         }
 
+        /// <summary>
+        /// Runs all menu items on the current menu, invoking each item's method and collecting results.
+        /// </summary>
+        /// <param name="menuManager">The menu manager providing the current menu.</param>
+        /// <returns>The combined results of running all menu items.</returns>
         [InputCommand("all", "run all items on the current menu")]
         public InputCommandResults RunAllItems(IMenuManager menuManager)
         {
@@ -114,6 +125,11 @@ namespace Bam.Console
             return results;
         }
 
+        /// <summary>
+        /// Runs every menu item from all menus, invoking each item's method and collecting results.
+        /// </summary>
+        /// <param name="menuManager">The menu manager providing all menus.</param>
+        /// <returns>The combined results of running every menu item.</returns>
         [InputCommand("every", "run every item on every menu")]
         public InputCommandResults RunEveryItemFromAllMenus(IMenuManager menuManager)
         {

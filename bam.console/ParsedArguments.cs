@@ -12,16 +12,36 @@ namespace Bam.Console
     /// </summary>
     public class ParsedArguments : IParsedArguments
     {
+        /// <summary>
+        /// Gets the default argument prefix string from the default format options.
+        /// </summary>
         public static string DefaultArgPrefix => ArgumentFormatOptions.Default.Prefix;
+
+        /// <summary>
+        /// Gets the default value separator character from the default format options.
+        /// </summary>
         public static char ValueDivider => ArgumentFormatOptions.Default.ValueSeparator;
 
+        /// <summary>
+        /// Gets the default argument format options.
+        /// </summary>
         public static ArgumentFormatOptions DefaultOptions => ArgumentFormatOptions.Default;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsedArguments"/> class using argument name strings as valid arguments.
+        /// </summary>
+        /// <param name="args">The command line arguments to parse.</param>
+        /// <param name="validArgNames">An array of valid argument names.</param>
         public ParsedArguments(string[] args, string[] validArgNames)
             : this(args, ArgumentInfo.FromStringArray(validArgNames))
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsedArguments"/> class with the specified valid argument infos and default options.
+        /// </summary>
+        /// <param name="args">The command line arguments to parse.</param>
+        /// <param name="validArgumentInfos">The valid argument info entries.</param>
         public ParsedArguments(string[] args, ArgumentInfo[] validArgumentInfos) : this(DefaultOptions, args, validArgumentInfos)
         {
         }
@@ -33,15 +53,31 @@ namespace Bam.Console
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsedArguments"/> class, treating all arguments in the array as valid.
+        /// </summary>
+        /// <param name="args">The command line arguments to parse.</param>
         public ParsedArguments(string[] args) : this(DefaultOptions, args, ArgumentInfo.FromArgs(DefaultOptions, args))
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsedArguments"/> class with a custom argument prefix.
+        /// </summary>
+        /// <param name="argPrefix">The argument prefix string to use (e.g., "--" or "/").</param>
+        /// <param name="args">The command line arguments to parse.</param>
+        /// <param name="validArgumentInfos">The valid argument info entries.</param>
         public ParsedArguments(string argPrefix, string[] args, ArgumentInfo[] validArgumentInfos)
             : this(new ArgumentFormatOptions(argPrefix, ValueDivider), args, validArgumentInfos)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ParsedArguments"/> class with the specified format options and valid argument infos.
+        /// </summary>
+        /// <param name="options">The argument format options specifying prefix and separator.</param>
+        /// <param name="args">The command line arguments to parse.</param>
+        /// <param name="validArgumentInfos">The valid argument info entries.</param>
         public ParsedArguments(ArgumentFormatOptions options, string[] args, ArgumentInfo[] validArgumentInfos)
         {
             OriginalStrings = args;
@@ -136,22 +172,43 @@ namespace Bam.Console
             }
         }
 
+        /// <summary>
+        /// Ensures the specified argument is present and has a non-empty value; throws if not.
+        /// </summary>
+        /// <param name="argument">The argument name to check.</param>
+        /// <param name="message">The exception message if the argument value is missing.</param>
         public void EnsureArgumentValue(string argument, string message = "Required argument value not specified")
         {
             EnsureArgument(argument);
             Args.ThrowIf(string.IsNullOrEmpty(this[argument]), message);
         }
 
+        /// <summary>
+        /// Ensures the specified argument is present; throws if not.
+        /// </summary>
+        /// <param name="argument">The argument name to check.</param>
+        /// <param name="message">The exception message if the argument is missing.</param>
         public void EnsureArgument(string argument, string message = "Required argument not specified")
         {
             Args.ThrowIf(!Contains(argument), message);
         }
 
+        /// <summary>
+        /// Determines whether the specified argument name is present in the parsed arguments.
+        /// </summary>
+        /// <param name="argumentToLookFor">The argument name to search for.</param>
+        /// <returns>True if the argument is present; otherwise, false.</returns>
         public bool Contains(string argumentToLookFor)
         {
             return parsedArguments.ContainsKey(argumentToLookFor);
         }
 
+        /// <summary>
+        /// Determines whether the specified argument name is present and outputs its value.
+        /// </summary>
+        /// <param name="argumentToLookFor">The argument name to search for.</param>
+        /// <param name="argument">When this method returns, contains the argument value if found; otherwise, null.</param>
+        /// <returns>True if the argument is present; otherwise, false.</returns>
         public bool Contains(string argumentToLookFor, out string? argument)
         {
             bool result = parsedArguments.ContainsKey(argumentToLookFor);
@@ -159,22 +216,50 @@ namespace Bam.Console
             return result;
         }
 
+        /// <summary>
+        /// Gets or sets the message describing the parse result (e.g., error details).
+        /// </summary>
         public string Message { get; set; }
+
+        /// <summary>
+        /// Gets or sets the status of the argument parsing operation.
+        /// </summary>
         public ArgumentParseStatus Status { get; set; }
+
+        /// <summary>
+        /// Gets the original string array that was parsed.
+        /// </summary>
         public string[] OriginalStrings { get; private set; }
+
         readonly Dictionary<string, string> parsedArguments;
+
+        /// <summary>
+        /// Gets or sets the value of the argument with the specified name.
+        /// </summary>
+        /// <param name="name">The argument name.</param>
+        /// <returns>The argument value, or null if not found.</returns>
         public string this[string name]
         {
             get => parsedArguments.ContainsKey(name) ? parsedArguments[name] : null;
             set => parsedArguments[name] = value;
         }
 
+        /// <summary>
+        /// Gets all parsed argument names.
+        /// </summary>
         public string[] Keys => parsedArguments.Keys.ToArray();
 
+        /// <summary>
+        /// Gets the number of parsed arguments.
+        /// </summary>
         public int Length => parsedArguments.Count;
 
         private static ParsedArguments _current;
         static readonly object _currentLock = new object();
+
+        /// <summary>
+        /// Gets the singleton instance of <see cref="ParsedArguments"/>, lazily initialized from the current process command line arguments.
+        /// </summary>
         public static ParsedArguments Current => _currentLock.DoubleCheckLock(ref _current, () => new ParsedArguments());
     }
 }

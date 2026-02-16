@@ -8,13 +8,13 @@ namespace Bam.Console;
 public class Prompt
 {
     /// <summary>
-    /// Prompt for a selection from the specified list of values
+    /// Prompts the user to select from the specified list of values, using each item's <c>ToString()</c> for display.
     /// </summary>
-    /// <param name="options"></param>
-    /// <param name="prompt"></param>
-    /// <param name="color"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <param name="options">The available options to choose from.</param>
+    /// <param name="prompt">The prompt text to display.</param>
+    /// <param name="color">The prompt text color.</param>
+    /// <typeparam name="T">The type of the options.</typeparam>
+    /// <returns>The selected option.</returns>
     public static T SelectFrom<T>(IEnumerable<T> options, string prompt = "Select an option from the list", ConsoleColor color = ConsoleColor.DarkCyan)
     {
         return SelectFrom(options, (t) => t.ToString(), prompt, color);
@@ -182,23 +182,52 @@ public class Prompt
         return Show(message, promptTxt, new ConsoleColorCombo(textColor), allowQuit);
     }
 
+    /// <summary>
+    /// Prompts the user for input with the specified prompt text, foreground color, and background color.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="promptTxt">The prompt indicator text.</param>
+    /// <param name="textColor">The foreground text color.</param>
+    /// <param name="backgroundColor">The background color.</param>
+    /// <returns>The user's input.</returns>
     public static string Show(string message, string promptTxt, ConsoleColor textColor, ConsoleColor backgroundColor)
     {
         return Show(message, promptTxt, new ConsoleColorCombo(textColor, backgroundColor), false);
     }
 
+    /// <summary>
+    /// Prompts the user for input with the specified prompt text, colors, and quit option.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="promptTxt">The prompt indicator text.</param>
+    /// <param name="textColor">The foreground text color.</param>
+    /// <param name="backgroundColor">The background color.</param>
+    /// <param name="allowQuit">Whether to allow quitting by entering "q".</param>
+    /// <returns>The user's input.</returns>
     public static string Show(string message, string promptTxt, ConsoleColor textColor, ConsoleColor backgroundColor, bool allowQuit)
     {
         return Show(message, promptTxt, new ConsoleColorCombo(textColor, backgroundColor), allowQuit);
     }
 
+    /// <summary>
+    /// Prompts the user for input with the specified prompt text, color combination, and quit option.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="promptTxt">The prompt indicator text.</param>
+    /// <param name="colors">The foreground and background color combination.</param>
+    /// <param name="allowQuit">Whether to allow quitting by entering "q".</param>
+    /// <returns>The user's input.</returns>
     public static string Show(string message, string promptTxt, ConsoleColorCombo colors, bool allowQuit)
     {
         return Provider(message, promptTxt, colors, allowQuit);
     }
 
-    
+
     static Func<string, string, ConsoleColorCombo, bool, string> _provider;
+
+    /// <summary>
+    /// Gets or sets the delegate function that implements prompt display and input reading. Can be replaced for testing.
+    /// </summary>
     public static Func<string, string, ConsoleColorCombo, bool, string> Provider
     {
         get
@@ -220,11 +249,24 @@ public class Prompt
         set => _provider = value;
     }
 
+    /// <summary>
+    /// Prompts the user for a password, masking input characters with asterisks.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="textColor">The prompt text color.</param>
+    /// <returns>The entered password.</returns>
     public static string ForPassword(string message = "Please enter password", ConsoleColor textColor = ConsoleColor.Cyan)
     {
         return ForPassword(message, ">>", new ConsoleColorCombo(textColor));
     }
-    
+
+    /// <summary>
+    /// Prompts the user for a password with the specified prompt text and colors, masking input characters with asterisks.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="promptText">The prompt indicator text.</param>
+    /// <param name="colors">The foreground and background color combination.</param>
+    /// <returns>The entered password.</returns>
     public static string ForPassword(string message, string promptText, ConsoleColorCombo colors)
     {
         Message.Print($"{message} {promptText} ", colors);

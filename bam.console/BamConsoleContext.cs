@@ -9,6 +9,9 @@ using Bam.Services;
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Provides the main entry point and context for a Bam console application, including argument parsing, menu management, and command switch execution.
+    /// </summary>
     public class BamConsoleContext : BamContext, IBamConsoleContext
     {
         static BamConsoleContext()
@@ -16,21 +19,38 @@ namespace Bam.Console
             Current = new BamConsoleContext();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BamConsoleContext"/> class with an empty list of valid argument info.
+        /// </summary>
         public BamConsoleContext()
         {
             ValidArgumentInfo = new List<ArgumentInfo>();
         }
 
+        /// <summary>
+        /// Initializes and starts the console application using the default menu specs.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
         public void Main(string[] args)
         {
             Main(args, MenuSpecs.LoadList.ToArray());
         }
 
+        /// <summary>
+        /// Initializes and starts the console application by scanning the specified assemblies for menu specs.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="assemblies">The assemblies to scan for menu specifications.</param>
         public void Main(string[] args, params Assembly[] assemblies)
         {
             Main(args, MenuSpecs.Scan(assemblies).ToArray());
         }
 
+        /// <summary>
+        /// Initializes and starts the console application with the specified menu specs.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="menuSpecs">The menu specifications to load.</param>
         public void Main(string[] args, params MenuSpecs[] menuSpecs)
         {
             AddSwitches();
@@ -38,17 +58,31 @@ namespace Bam.Console
             MenuSpecs.LoadList = menuSpecs;
             Main(args, () => { });
         }
-        
+
+        /// <summary>
+        /// Static entry point that initializes and starts the console application using the default menu specs and the singleton <see cref="Current"/> context.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
         public static void StaticMain(string[] args)
         {
             StaticMain(args, MenuSpecs.LoadList.ToArray());
         }
 
+        /// <summary>
+        /// Static entry point that initializes and starts the console application by scanning the specified assemblies for menu specs.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="assemblies">The assemblies to scan for menu specifications.</param>
         public static void StaticMain(string[] args, params Assembly[] assemblies)
         {
             StaticMain(args, MenuSpecs.Scan(assemblies).ToArray());
         }
 
+        /// <summary>
+        /// Static entry point that initializes and starts the console application with the specified menu specs.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="menuSpecs">The menu specifications to load.</param>
         public static void StaticMain(string[] args, params MenuSpecs[] menuSpecs)
         {
             Current.AddSwitches();
@@ -57,6 +91,12 @@ namespace Bam.Console
             StaticMain(args, () => { });
         }
 
+        /// <summary>
+        /// Static entry point that initializes the console application with a pre-initialization action, then starts the menu input/output loop.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="preInit">An action to execute before initialization.</param>
+        /// <param name="parseErrorHandler">An optional delegate invoked when argument parsing fails.</param>
         public static void StaticMain(string[] args, Action preInit, ConsoleArgsParsedDelegate? parseErrorHandler = null)
         {
             if (parseErrorHandler == null)
@@ -70,6 +110,12 @@ namespace Bam.Console
             System.Console.ReadLine();
         }
 
+        /// <summary>
+        /// Instance entry point that initializes the console application with a pre-initialization action, then starts the menu input/output loop.
+        /// </summary>
+        /// <param name="args">The command line arguments.</param>
+        /// <param name="preInit">An action to execute before initialization.</param>
+        /// <param name="parseErrorHandler">An optional delegate invoked when argument parsing fails.</param>
         public void Main(string[] args, Action preInit, ConsoleArgsParsedDelegate? parseErrorHandler = null)
         {
             if (parseErrorHandler == null)
@@ -177,6 +223,10 @@ namespace Bam.Console
             }
         }
 
+        /// <summary>
+        /// Resets console colors, fires exit events, and terminates the process with the specified exit code.
+        /// </summary>
+        /// <param name="code">The exit code to return to the operating system.</param>
         public static void Exit(int code = 0)
         {
             System.Console.ResetColor();
@@ -186,44 +236,93 @@ namespace Bam.Console
             Exited?.Invoke(code);
         }
 
+        /// <summary>
+        /// Gets or sets the singleton instance of the <see cref="BamConsoleContext"/>.
+        /// </summary>
         public new static BamConsoleContext Current
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Occurs when command line arguments have been successfully parsed.
+        /// </summary>
         public event ConsoleArgsParsedDelegate ArgsParsed;
+
+        /// <summary>
+        /// Occurs when command line argument parsing results in an error or invalid status.
+        /// </summary>
         public event ConsoleArgsParsedDelegate ArgsParsedError;
 
+        /// <summary>
+        /// Occurs when the console application is about to exit.
+        /// </summary>
         public static event ExitDelegate Exiting;
+
+        /// <summary>
+        /// Occurs after the console application has exited.
+        /// </summary>
         public static event ExitDelegate Exited;
 
         private ServiceRegistry? _serviceRegistry;
+
+        /// <summary>
+        /// Gets or sets the service registry used for dependency resolution in this context.
+        /// </summary>
         public override ServiceRegistry ServiceRegistry
         {
             get => _serviceRegistry ??= GetDefaultContextServiceRegistry();
             set => _serviceRegistry = value;
         }
 
+        /// <summary>
+        /// Gets the argument parser resolved from the service registry.
+        /// </summary>
         public IArgumentParser ArgumentParser => ServiceRegistry.Get<IArgumentParser>();
 
+        /// <summary>
+        /// Gets the configuration provider resolved from the service registry.
+        /// </summary>
         public override IConfigurationProvider ConfigurationProvider => ServiceRegistry.Get<IConfigurationProvider>();
 
+        /// <summary>
+        /// Gets the application name provider resolved from the service registry.
+        /// </summary>
         public override IApplicationNameProvider ApplicationNameProvider => ServiceRegistry.Get<IApplicationNameProvider>();
 
+        /// <summary>
+        /// Gets the logger resolved from the service registry.
+        /// </summary>
         public override ILogger Logger => ServiceRegistry.Get<ILogger>();
 
+        /// <summary>
+        /// Gets or sets the menu manager that drives the console menu input/output loop.
+        /// </summary>
         public IMenuManager MenuManager
         {
             get => ServiceRegistry.Get<IMenuManager>();
             set => ServiceRegistry.Set(value);
         }
 
+        /// <summary>
+        /// Registers a valid command line argument by name with an optional description.
+        /// </summary>
+        /// <param name="name">The argument name.</param>
+        /// <param name="description">An optional description of the argument.</param>
         public void AddValidArgument(string name, string? description = null)
         {
             AddValidArgument(name, false, description: description);
         }
 
+        /// <summary>
+        /// Registers a valid command line argument with additional options.
+        /// </summary>
+        /// <param name="name">The argument name.</param>
+        /// <param name="allowNull">Whether the argument may have no value.</param>
+        /// <param name="addAcronym">Whether to also register a case-acronym of the name.</param>
+        /// <param name="description">An optional description of the argument.</param>
+        /// <param name="valueExample">An optional example value for usage display.</param>
         public void AddValidArgument(string name, bool allowNull, bool addAcronym = false, string? description = null, string? valueExample = null)
         {
             ValidArgumentInfo.Add(new ArgumentInfo(name, allowNull, description, valueExample));
@@ -234,7 +333,7 @@ namespace Bam.Console
         }
 
         /// <summary>
-        /// Gets or sets thhe parsed arguments passed om the command line.
+        /// Gets or sets the parsed arguments passed on the command line.
         /// </summary>
         public IParsedArguments Arguments
         {
@@ -267,6 +366,10 @@ File Version: {1}
             Thread.Sleep(30);
         }
 
+        /// <summary>
+        /// Prints version information for the specified assembly, including assembly version, file version, and commit hash.
+        /// </summary>
+        /// <param name="assembly">The assembly to display version information for.</param>
         public static void Version(Assembly? assembly)
         {
             FileVersionInfo fv = FileVersionInfo.GetVersionInfo(assembly?.Location);
@@ -287,11 +390,19 @@ File Version: {1}
             Message.PrintLine(versionInfo.ToString(), ConsoleColor.Cyan);
         }
 
+        /// <summary>
+        /// Creates a new <see cref="BamConsoleContext"/> and returns its default service registry.
+        /// </summary>
+        /// <returns>A new default <see cref="ServiceRegistry"/>.</returns>
         public static ServiceRegistry GetDefaultServiceRegistry()
         {
             return new BamConsoleContext().ServiceRegistry;
         }
-        
+
+        /// <summary>
+        /// Builds and returns the default service registry for this console context, including argument parsing, configuration, logging, and menu rendering services.
+        /// </summary>
+        /// <returns>A configured <see cref="ServiceRegistry"/>.</returns>
         public override ServiceRegistry GetDefaultContextServiceRegistry()
         {
             ServiceRegistry serviceRegistry = new ServiceRegistry()
