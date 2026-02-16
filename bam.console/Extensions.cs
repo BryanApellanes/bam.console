@@ -7,8 +7,16 @@ using Bam.CommandLine;
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Extension methods for running external processes from command strings and file paths.
+    /// </summary>
     public static class Extensions
     {
+        /// <summary>
+        /// Runs the specified command string in a separate process with default settings.
+        /// </summary>
+        /// <param name="command">The command to run.</param>
+        /// <returns>The process output.</returns>
         public static ProcessOutput Run(this string command)
         {
             return Run(command, (s) => { });
@@ -29,11 +37,27 @@ namespace Bam.Console
             return command.Run(null, onStandardOutput, onStandardOutput, false, timeout);
         }
 
+        /// <summary>
+        /// Runs the specified command in a separate process with separate standard output and error output handlers.
+        /// </summary>
+        /// <param name="command">The command to run.</param>
+        /// <param name="onStandardOut">Handler for standard output lines.</param>
+        /// <param name="onErrorOut">Handler for error output lines.</param>
+        /// <param name="timeout">Optional timeout in milliseconds; null means non-blocking.</param>
+        /// <returns>The process output.</returns>
         public static ProcessOutput Run(this string command, Action<string> onStandardOut, Action<string> onErrorOut, int? timeout = null)
         {
             return command.Run(null, onStandardOut, onErrorOut, false, timeout);
         }
 
+        /// <summary>
+        /// Runs the specified command in a separate process, optionally prompting for administrator privileges.
+        /// </summary>
+        /// <param name="command">The command to run.</param>
+        /// <param name="onStandardOut">Handler for standard output lines.</param>
+        /// <param name="onErrorOut">Handler for error output lines.</param>
+        /// <param name="promptForAdmin">Whether to prompt for administrator privileges.</param>
+        /// <returns>The process output.</returns>
         public static ProcessOutput Run(this string command, Action<string> onStandardOut, Action<string> onErrorOut, bool promptForAdmin = false)
         {
             return command.Run(null, onStandardOut, onErrorOut, promptForAdmin);
@@ -80,6 +104,14 @@ namespace Bam.Console
             return exe.Run(arguments, onExit, null);
         }
 
+        /// <summary>
+        /// Runs the process described by the specified <see cref="ProcessStartInfo"/> and waits for it to complete.
+        /// </summary>
+        /// <param name="info">The process start info.</param>
+        /// <param name="standardOut">Handler for standard output lines.</param>
+        /// <param name="errorOut">Handler for error output lines.</param>
+        /// <param name="timeOut">Timeout in milliseconds.</param>
+        /// <returns>The process output.</returns>
         public static ProcessOutput RunAndWait(this ProcessStartInfo info, Action<string> standardOut = null, Action<string> errorOut = null, int timeOut = 60000)
         {
             ProcessOutputCollector output = new ProcessOutputCollector(standardOut, errorOut);
@@ -100,16 +132,36 @@ namespace Bam.Console
             return startInfo.Run(standardOut, errorOut);
         }
 
+        /// <summary>
+        /// Creates a <see cref="ProcessStartInfo"/> for the specified file path with the current directory as the working directory.
+        /// </summary>
+        /// <param name="filePath">The path to the executable.</param>
+        /// <param name="arguments">Optional command line arguments.</param>
+        /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
         public static ProcessStartInfo ToStartInfo(this string filePath, string arguments = null)
         {
             return filePath.ToStartInfo(new DirectoryInfo("."), arguments);
         }
 
+        /// <summary>
+        /// Creates a <see cref="ProcessStartInfo"/> for the specified file path with the specified working directory.
+        /// </summary>
+        /// <param name="filePath">The path to the executable.</param>
+        /// <param name="workingDirectory">The working directory for the process.</param>
+        /// <param name="arguments">Optional command line arguments.</param>
+        /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
         public static ProcessStartInfo ToStartInfo(this string filePath, DirectoryInfo workingDirectory, string arguments = null)
         {
             return new FileInfo(filePath).ToStartInfo(workingDirectory, arguments);
         }
 
+        /// <summary>
+        /// Creates a <see cref="ProcessStartInfo"/> for the specified file with redirected output, no shell execute, and no window.
+        /// </summary>
+        /// <param name="fileInfo">The file info for the executable.</param>
+        /// <param name="workingDirectory">The working directory for the process.</param>
+        /// <param name="arguments">Optional command line arguments.</param>
+        /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
         public static ProcessStartInfo ToStartInfo(this FileInfo fileInfo, DirectoryInfo workingDirectory, string arguments = null)
         {
             return new ProcessStartInfo
@@ -125,12 +177,26 @@ namespace Bam.Console
             };
         }
 
+        /// <summary>
+        /// Creates a <see cref="ProcessStartInfo"/> that runs the specified file via cmd.exe /c.
+        /// </summary>
+        /// <param name="cmdFilePath">The path to the command file.</param>
+        /// <param name="arguments">The arguments to pass to the command file.</param>
+        /// <param name="workingDir">Optional working directory; defaults to the current directory.</param>
+        /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
         public static ProcessStartInfo ToCmdStartInfo(this string cmdFilePath, string arguments, DirectoryInfo workingDir = null)
         {
             FileInfo cmdFile = new FileInfo(cmdFilePath);
             return cmdFile.ToCmdStartInfo(arguments, workingDir ?? new DirectoryInfo("."));
         }
 
+        /// <summary>
+        /// Creates a <see cref="ProcessStartInfo"/> that runs the specified command file via cmd.exe /c.
+        /// </summary>
+        /// <param name="cmdFileInfo">The file info for the command file.</param>
+        /// <param name="arguments">The arguments to pass to the command file.</param>
+        /// <param name="workingDirectory">The working directory for the process.</param>
+        /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
         public static ProcessStartInfo ToCmdStartInfo(this FileInfo cmdFileInfo, string arguments, DirectoryInfo workingDirectory)
         {
             return OSInfo.GetPath("cmd.exe").ToStartInfo(workingDirectory, $"/c \"{cmdFileInfo.FullName}\" {arguments}");

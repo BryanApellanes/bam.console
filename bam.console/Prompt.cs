@@ -2,6 +2,9 @@ using System.Text;
 
 namespace Bam.Console;
 
+/// <summary>
+/// Provides static methods for prompting the user for input, selections, confirmations, and passwords via the console.
+/// </summary>
 public class Prompt
 {
     /// <summary>
@@ -33,6 +36,13 @@ public class Prompt
         return optionsArray[SelectFrom(optionStrings, prompt, color)];
     }
 
+    /// <summary>
+    /// Prompts the user to select from a numbered list of string options.
+    /// </summary>
+    /// <param name="options">The options to display.</param>
+    /// <param name="prompt">The prompt text to display.</param>
+    /// <param name="color">The color for the prompt text.</param>
+    /// <returns>The zero-based index of the selected option.</returns>
     public static int SelectFrom(string[] options, string prompt = "Select an option from the list", ConsoleColor color = ConsoleColor.Cyan)
     {
         StringBuilder list = new StringBuilder();
@@ -86,11 +96,23 @@ public class Prompt
         return false;
     }
 
+    /// <summary>
+    /// Prompts the user for a number. Alias for <see cref="ForInt"/>.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="color">The prompt text color.</param>
+    /// <returns>The entered number, or -1 if parsing fails.</returns>
     public static int ForNumber(string message, ConsoleColor color = ConsoleColor.Cyan)
     {
         return ForInt(message, color);
     }
 
+    /// <summary>
+    /// Prompts the user for a long integer.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="color">The prompt text color.</param>
+    /// <returns>The entered long value, or -1 if parsing fails.</returns>
     public static long ForLong(string message, ConsoleColor color = ConsoleColor.Cyan)
     {
         string value = Show(message, color);
@@ -99,6 +121,12 @@ public class Prompt
         return result;
     }
 
+    /// <summary>
+    /// Prompts the user for an integer.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="color">The prompt text color.</param>
+    /// <returns>The entered integer, or -1 if parsing fails.</returns>
     public static int ForInt(string message, ConsoleColor color = ConsoleColor.Cyan)
     {
         string value = Show(message, color);
@@ -117,16 +145,38 @@ public class Prompt
         return Show(message, textColor, false);
     }
 
+    /// <summary>
+    /// Prompts the user for input with an optional quit option.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="textColor">The text color.</param>
+    /// <param name="allowQuit">Whether to allow quitting by entering "q".</param>
+    /// <returns>The user's input.</returns>
     public static string Show(string message, ConsoleColor textColor, bool allowQuit)
     {
         return Show(message, ">>", textColor, allowQuit);
     }
 
+    /// <summary>
+    /// Prompts the user for input with the specified prompt text and color.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="promptTxt">The prompt indicator text (e.g., ">>").</param>
+    /// <param name="textColor">The text color.</param>
+    /// <returns>The user's input.</returns>
     public static string Show(string message, string promptTxt, ConsoleColor textColor)
     {
         return Show(message, promptTxt, textColor, false);
     }
 
+    /// <summary>
+    /// Prompts the user for input with the specified prompt text, color, and quit option.
+    /// </summary>
+    /// <param name="message">The prompt message.</param>
+    /// <param name="promptTxt">The prompt indicator text.</param>
+    /// <param name="textColor">The text color.</param>
+    /// <param name="allowQuit">Whether to allow quitting by entering "q".</param>
+    /// <returns>The user's input.</returns>
     public static string Show(string message, string promptTxt, ConsoleColor textColor, bool allowQuit)
     {
         return Show(message, promptTxt, new ConsoleColorCombo(textColor), allowQuit);

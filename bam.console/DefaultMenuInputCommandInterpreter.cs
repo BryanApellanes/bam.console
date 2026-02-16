@@ -5,15 +5,29 @@ using Bam.DependencyInjection;
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Interprets menu input by matching typed command names against methods decorated with <see cref="InputCommandAttribute"/> on the current menu's container type.
+    /// </summary>
     public class DefaultMenuInputCommandInterpreter : IMenuInputCommandInterpreter
     {
         private readonly Dictionary<Type, InputCommands> _inputOptions = new Dictionary<Type, InputCommands>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultMenuInputCommandInterpreter"/> class with the specified dependency provider.
+        /// </summary>
+        /// <param name="dependencyProvider">The dependency provider used to resolve instances and method arguments.</param>
         public DefaultMenuInputCommandInterpreter(IDependencyProvider dependencyProvider)
         {
             this.DependencyProvider = dependencyProvider;
         }
 
+        /// <summary>
+        /// Attempts to interpret the menu input as a named command, looking up and invoking matching <see cref="InputCommandAttribute"/> methods.
+        /// </summary>
+        /// <param name="menuManager">The current menu manager.</param>
+        /// <param name="menuInput">The input to interpret.</param>
+        /// <param name="result">The results of any commands that were invoked.</param>
+        /// <returns>True if the input was interpreted as a command; otherwise, false.</returns>
         public bool InterpretInput(IMenuManager menuManager, IMenuInput menuInput, out IInputCommandResults result)
         {
             InputCommandResults results = new InputCommandResults();
@@ -66,10 +80,13 @@ namespace Bam.Console
             return false;
         }
 
-        public IDependencyProvider DependencyProvider 
+        /// <summary>
+        /// Gets the dependency provider used to resolve instances and method arguments.
+        /// </summary>
+        public IDependencyProvider DependencyProvider
         {
-            get; 
-            private set; 
+            get;
+            private set;
         }
 
         protected InputCommands GetInputOptions(Type containerType)

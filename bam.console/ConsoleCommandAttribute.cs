@@ -38,6 +38,9 @@
             this.Description = description;
         }
 
+        /// <summary>
+        /// Gets or sets an example value to display in usage help for this command.
+        /// </summary>
         public string? ValueExample
         {
             get;
@@ -53,12 +56,18 @@
             private set;
         }
 
+        /// <summary>
+        /// Gets the abbreviated form of the option name, derived as an acronym from the capital letters of <see cref="OptionName"/>.
+        /// </summary>
         public string? OptionShortName
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets a brief description of what this console command does.
+        /// </summary>
         public string? Description
         {
             get;

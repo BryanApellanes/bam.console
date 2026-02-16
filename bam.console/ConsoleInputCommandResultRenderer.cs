@@ -2,8 +2,15 @@
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Renders input command results to the console, displaying success or failure with color-coded output.
+    /// </summary>
     public class ConsoleInputCommandResultRenderer : IInputCommandResultRenderer
     {
+        /// <summary>
+        /// Renders the specified input command result to the console, showing the command name and whether it succeeded or failed.
+        /// </summary>
+        /// <param name="inputCommandResult">The input command result to render.</param>
         public void RenderInputCommandResult(IInputCommandResult inputCommandResult)
         {
             Args.ThrowIfNull(inputCommandResult, nameof(inputCommandResult));

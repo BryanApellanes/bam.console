@@ -3,8 +3,14 @@ using System.Text;
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Reads menu input from the console, handling key presses including navigation, backspace, and text entry.
+    /// </summary>
     public class ConsoleMenuInputReader : IMenuInputReader
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsoleMenuInputReader"/> class with the default exit key.
+        /// </summary>
         public ConsoleMenuInputReader()
         {
             //BamContext = bamContext;
@@ -12,6 +18,9 @@ namespace Bam.Console
             Input = new StringBuilder();
         }
 
+        /// <summary>
+        /// Occurs when input is being read from the console.
+        /// </summary>
         public event EventHandler<MenuInputOutputLoopEventArgs> ReadingInput;
 
         /*protected IBamContext BamContext
@@ -26,12 +35,19 @@ namespace Bam.Console
             private set;
         }
 
+        /// <summary>
+        /// Gets the console key that triggers an exit from the menu loop.
+        /// </summary>
         public ConsoleKey ExitKey
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Reads a single key press from the console and returns it as a <see cref="ConsoleMenuInput"/>, handling navigation keys, backspace, and text accumulation.
+        /// </summary>
+        /// <returns>An <see cref="IMenuInput"/> representing the captured key press and accumulated input.</returns>
         public IMenuInput ReadMenuInput()
         {
             ConsoleKeyInfo consoleKeyInfo = System.Console.ReadKey();

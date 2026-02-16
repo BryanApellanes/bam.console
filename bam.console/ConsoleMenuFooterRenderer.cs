@@ -2,8 +2,16 @@
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Renders menu footer text and a tab-separated list of all menus to the console, highlighting the selected menu.
+    /// </summary>
     public class ConsoleMenuFooterRenderer : IMenuFooterRenderer
     {
+        /// <summary>
+        /// Renders the footer for the selected menu and displays all available menus with their selectors.
+        /// </summary>
+        /// <param name="selectedMenu">The currently selected menu.</param>
+        /// <param name="allMenus">All available menus to display in the footer.</param>
         public void RenderMenuFooter(IMenu selectedMenu, params IMenu[] allMenus)
         {
             Message.PrintLine(selectedMenu.FooterText);

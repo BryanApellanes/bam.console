@@ -2,16 +2,28 @@
 
 namespace Bam.Console
 {
+    /// <summary>
+    /// Represents the result of executing an input command, including success status, invocation result, and any exception.
+    /// </summary>
     public class InputCommandResult : IInputCommandResult
     {
-        public InputCommandResult() 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InputCommandResult"/> class.
+        /// </summary>
+        public InputCommandResult()
         {
         }
 
+        /// <summary>
+        /// Gets or sets the name of the input command that was executed.
+        /// </summary>
         public string InputName { get; set; }
 
         object? _invocationResult;
-        public object? InvocationResult 
+        /// <summary>
+        /// Gets or sets the return value of the invoked command method. Setting this also checks for nested exceptions in <see cref="InputCommandResults"/> or <see cref="InputCommandResult"/> values.
+        /// </summary>
+        public object? InvocationResult
         {
             get
             {
@@ -30,6 +42,9 @@ namespace Bam.Console
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the command executed without throwing an exception.
+        /// </summary>
         public bool Success
         {
             get
@@ -38,6 +53,9 @@ namespace Bam.Console
             }
         }
 
+        /// <summary>
+        /// Gets the exception message, or null if no exception occurred.
+        /// </summary>
         public string? Message
         {
             get
@@ -46,6 +64,9 @@ namespace Bam.Console
             }
         }
 
+        /// <summary>
+        /// Gets or sets the exception that occurred during command execution, or null if successful.
+        /// </summary>
         public Exception Exception
         {
             get;

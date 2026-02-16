@@ -5,6 +5,11 @@
     /// </summary>
     public interface IArgumentParser
     {
-        IParsedArguments ParseArguments(string[] arguments); 
+        /// <summary>
+        /// Parses the specified command line arguments into an <see cref="IParsedArguments"/> instance.
+        /// </summary>
+        /// <param name="arguments">The command line arguments to parse.</param>
+        /// <returns>The parsed arguments.</returns>
+        IParsedArguments ParseArguments(string[] arguments);
     }
 }
