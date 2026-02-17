@@ -17,7 +17,7 @@ namespace Bam.Console
         /// <summary>
         /// Gets or sets the name of the input command that was executed.
         /// </summary>
-        public string InputName { get; set; }
+        public string InputName { get; set; } = null!;
 
         object? _invocationResult;
         /// <summary>
@@ -71,7 +71,7 @@ namespace Bam.Console
         {
             get;
             set;
-        }
+        } = null!;
 
         private void CheckResultsExceptions(InputCommandResults results)
         {

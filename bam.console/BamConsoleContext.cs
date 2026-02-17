@@ -248,22 +248,22 @@ namespace Bam.Console
         /// <summary>
         /// Occurs when command line arguments have been successfully parsed.
         /// </summary>
-        public event ConsoleArgsParsedDelegate ArgsParsed;
+        public event ConsoleArgsParsedDelegate ArgsParsed = null!;
 
         /// <summary>
         /// Occurs when command line argument parsing results in an error or invalid status.
         /// </summary>
-        public event ConsoleArgsParsedDelegate ArgsParsedError;
+        public event ConsoleArgsParsedDelegate ArgsParsedError = null!;
 
         /// <summary>
         /// Occurs when the console application is about to exit.
         /// </summary>
-        public static event ExitDelegate Exiting;
+        public static event ExitDelegate Exiting = null!;
 
         /// <summary>
         /// Occurs after the console application has exited.
         /// </summary>
-        public static event ExitDelegate Exited;
+        public static event ExitDelegate Exited = null!;
 
         private ServiceRegistry? _serviceRegistry;
 
@@ -339,7 +339,7 @@ namespace Bam.Console
         {
             get;
             set;
-        }
+        } = null!;
 
         protected List<ArgumentInfo> ValidArgumentInfo
         {
@@ -349,8 +349,8 @@ namespace Bam.Console
 
         protected void Usage(Assembly assembly)
         {
-            string assemblyVersion = assembly.GetName().Version.ToString();
-            string fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
+            string assemblyVersion = assembly.GetName().Version!.ToString();
+            string fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion!;
             string usageFormat = @"Assembly Version: {0}
 File Version: {1}
 
@@ -372,8 +372,8 @@ File Version: {1}
         /// <param name="assembly">The assembly to display version information for.</param>
         public static void Version(Assembly? assembly)
         {
-            FileVersionInfo fv = FileVersionInfo.GetVersionInfo(assembly?.Location);
-            AssemblyCommitAttribute? commitAttribute = assembly.GetCustomAttribute<AssemblyCommitAttribute>();
+            FileVersionInfo fv = FileVersionInfo.GetVersionInfo(assembly!.Location);
+            AssemblyCommitAttribute? commitAttribute = assembly!.GetCustomAttribute<AssemblyCommitAttribute>();
             StringBuilder versionInfo = new StringBuilder();
             versionInfo.AppendFormat("AssemblyVersion: {0}\r\n", assembly.GetName().Version?.ToString());
             versionInfo.AppendFormat("AssemblyFileVersion: {0}\r\n", fv.FileVersion?.ToString());
@@ -504,7 +504,7 @@ File Version: {1}
             return executed;
         }
 
-        private static ConsoleMethod? GetConsoleMethod(IParsedArguments arguments, Type type, string key, object instance = null)
+        private static ConsoleMethod? GetConsoleMethod(IParsedArguments arguments, Type type, string key, object? instance = null)
         {
             string commandLineSwitch = key;
             string switchValue = arguments[key];

@@ -83,7 +83,7 @@ namespace Bam.Console
         /// <param name="messageSignatureArgs">Arguments to format into the message.</param>
         public static void Log(string messageSignature, ConsoleColor textColor, params object[] messageSignatureArgs)
         {
-            ConsoleMessage.Log(Bam.Logging.Log.Default, messageSignature, textColor, messageSignatureArgs);
+            ConsoleMessage.Log(Bam.Logging.Log.Default!, messageSignature, textColor, messageSignatureArgs);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Bam.Console
         /// <param name="messageSignatureArgs">Arguments to format into the message.</param>
         public static void Print(string messageSignature, ConsoleColorCombo colors, params object?[] messageSignatureArgs)
         {
-            ConsoleMessage.Print(messageSignature, colors, messageSignatureArgs);
+            ConsoleMessage.Print(messageSignature, colors, messageSignatureArgs!);
         }
 
         /// <summary>

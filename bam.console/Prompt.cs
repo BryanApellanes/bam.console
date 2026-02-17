@@ -17,7 +17,7 @@ public class Prompt
     /// <returns>The selected option.</returns>
     public static T SelectFrom<T>(IEnumerable<T> options, string prompt = "Select an option from the list", ConsoleColor color = ConsoleColor.DarkCyan)
     {
-        return SelectFrom(options, (t) => t.ToString(), prompt, color);
+        return SelectFrom(options, (t) => t!.ToString()!, prompt, color);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class Prompt
             Message.PrintLine();
         }
 
-        string answer = System.Console.ReadLine().Trim().ToLower();
+        string answer = System.Console.ReadLine()!.Trim().ToLower();
         if (answer.IsAffirmative())
         {
             return true;
@@ -223,7 +223,7 @@ public class Prompt
     }
 
 
-    static Func<string, string, ConsoleColorCombo, bool, string> _provider;
+    static Func<string, string, ConsoleColorCombo, bool, string> _provider = null!;
 
     /// <summary>
     /// Gets or sets the delegate function that implements prompt display and input reading. Can be replaced for testing.
@@ -236,14 +236,14 @@ public class Prompt
             {
                 Message.Print($"{message} {promptTxt} ", colors);
                 Thread.Sleep(200);
-                string answer = System.Console.ReadLine();
+                string answer = System.Console.ReadLine()!;
 
-                if (allowQuit && answer.ToLowerInvariant().Equals("q"))
+                if (allowQuit && answer!.ToLowerInvariant().Equals("q"))
                 {
                     Environment.Exit(0);
                 }
 
-                return answer.Trim();
+                return answer!.Trim();
             });
         }
         set => _provider = value;

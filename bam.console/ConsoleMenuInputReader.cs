@@ -21,7 +21,7 @@ namespace Bam.Console
         /// <summary>
         /// Occurs when input is being read from the console.
         /// </summary>
-        public event EventHandler<MenuInputOutputLoopEventArgs> ReadingInput;
+        public event EventHandler<MenuInputOutputLoopEventArgs> ReadingInput = null!;
 
         /*protected IBamContext BamContext
         {

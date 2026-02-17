@@ -25,7 +25,7 @@ namespace Bam.Console
         /// </summary>
         /// <param name="method">The method info to wrap.</param>
         public ConsoleMethod(MethodInfo method)
-            : this(method, null)
+            : this(method, null!)
         {
         }
 
@@ -57,11 +57,11 @@ namespace Bam.Console
         /// <summary>
         /// Used to help build usage examples for /? 
         /// </summary>
-        public string SwitchValue { get; set; }
+        public string SwitchValue { get; set; } = null!;
         /// <summary>
         /// Gets or sets the method info for the method to invoke.
         /// </summary>
-        public MethodInfo Method { get; set; }
+        public MethodInfo Method { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the parameters to pass when invoking the method.
@@ -140,14 +140,14 @@ namespace Bam.Console
         /// <summary>
         /// Gets or sets the attribute that decorates the method.
         /// </summary>
-        public Attribute Attribute { get; set; }
+        public Attribute Attribute { get; set; } = null!;
 
         /// <summary>
         /// Attempts to invoke the method, catching exceptions and passing them to the specified handler.
         /// </summary>
         /// <param name="exceptionHandler">An optional handler for exceptions thrown during invocation.</param>
         /// <returns>True if the method invoked successfully; otherwise, false.</returns>
-        public bool TryInvoke(Action<Exception> exceptionHandler = null)
+        public bool TryInvoke(Action<Exception>? exceptionHandler = null)
         {
             try
             {

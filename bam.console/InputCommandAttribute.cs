@@ -14,20 +14,20 @@
         /// </summary>
         /// <param name="name">The command name used to invoke the method from menu input.</param>
         /// <param name="description">An optional description of the command.</param>
-        public InputCommandAttribute(string name, string description = null)
+        public InputCommandAttribute(string name, string? description = null)
         {
             this.Name = name;
-            this.Description = description;
+            this.Description = description!;
         }
 
         /// <summary>
         /// Gets or sets the name of the command.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the description of the command.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; } = null!;
     }
 }

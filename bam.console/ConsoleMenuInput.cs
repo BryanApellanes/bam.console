@@ -24,7 +24,7 @@ namespace Bam.Console
         /// <summary>
         /// Gets or sets the accumulated input text.
         /// </summary>
-        public StringBuilder Input { get; set; }
+        public StringBuilder Input { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets a value indicating whether the exit key (Escape) was pressed.

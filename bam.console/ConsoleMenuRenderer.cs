@@ -68,7 +68,7 @@ namespace Bam.Console
         public override void RenderDivider()
         {
             Message.PrintLine();
-            Message.PrintLine(Divider, ConsoleColor.DarkYellow);
+            Message.PrintLine(Divider!, ConsoleColor.DarkYellow);
             Message.PrintLine();
         }
 

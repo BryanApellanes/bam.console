@@ -100,11 +100,11 @@ namespace Bam.Console
         /// <summary>
         /// Gets or sets the foreground and background color combination for this message.
         /// </summary>
-        public ConsoleColorCombo Colors { get; set; }
+        public ConsoleColorCombo Colors { get; set; } = null!;
 
-        protected string MessageSignature { get; set; }
+        protected string MessageSignature { get; set; } = null!;
 
-        protected object?[] MessageArgs { get; set; }
+        protected object?[] MessageArgs { get; set; } = null!;
 
         protected string GetText()
         {
@@ -134,7 +134,7 @@ namespace Bam.Console
         /// </summary>
         public void Log()
         {
-            Log(Bam.Logging.Log.Default, this);
+            Log(Bam.Logging.Log.Default!, this);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Bam.Console
         /// <param name="messageArgs">Arguments to format into the message.</param>
         public static void Log(string message, params object[] messageArgs)
         {
-            Log(Bam.Logging.Log.Default, message, messageArgs);
+            Log(Bam.Logging.Log.Default!, message, messageArgs);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Bam.Console
         /// <param name="messageSignatureArgs">Arguments to format into the message.</param>
         public static void Log(string messageSignature, ConsoleColorCombo colors, params object[] messageSignatureArgs)
         {
-            Log(Bam.Logging.Log.Default, messageSignature, colors, messageSignatureArgs);
+            Log(Bam.Logging.Log.Default!, messageSignature, colors, messageSignatureArgs);
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Bam.Console
         {
             foreach (ConsoleMessage consoleMessage in consoleMessages)
             {
-                Log(Bam.Logging.Log.Default, consoleMessage);
+                Log(Bam.Logging.Log.Default!, consoleMessage);
             }
         }
 
@@ -233,7 +233,7 @@ namespace Bam.Console
         /// <param name="consoleMessage">The message to log.</param>
         public static void Log(ConsoleMessage consoleMessage)
         {
-            Log(Bam.Logging.Log.Default, consoleMessage);
+            Log(Bam.Logging.Log.Default!, consoleMessage);
         }
 
         static readonly HashSet<ConsoleColor> _errorBackgrounds = new HashSet<ConsoleColor>(new ConsoleColor[] { ConsoleColor.Red, ConsoleColor.DarkRed, ConsoleColor.Magenta, ConsoleColor.DarkMagenta });
@@ -250,13 +250,13 @@ namespace Bam.Console
             {
                 if (_errorBackgrounds.Contains(consoleMessage.Colors.BackgroundColor))
                 {
-                    logger.Error(consoleMessage.MessageSignature ?? consoleMessage.Text, consoleMessage.MessageArgs ?? new object[] { });
+                    logger.Error(consoleMessage.MessageSignature ?? consoleMessage.Text, (consoleMessage.MessageArgs ?? new object[] { })!);
                     return;
                 }
 
                 if (_warningBackgrounds.Contains(consoleMessage.Colors.BackgroundColor))
                 {
-                    logger.Warning(consoleMessage.MessageSignature ?? consoleMessage.Text, consoleMessage.MessageArgs ?? new object[] { });
+                    logger.Warning(consoleMessage.MessageSignature ?? consoleMessage.Text, (consoleMessage.MessageArgs ?? new object[] { })!);
                     return;
                 }
 
@@ -266,11 +266,11 @@ namespace Bam.Console
                     case ConsoleColor.DarkRed:
                     case ConsoleColor.Magenta:
                     case ConsoleColor.DarkMagenta:
-                        logger.Error(consoleMessage.MessageSignature ?? consoleMessage.Text, consoleMessage.MessageArgs ?? new object[] { });
+                        logger.Error(consoleMessage.MessageSignature ?? consoleMessage.Text, (consoleMessage.MessageArgs ?? new object[] { })!);
                         break;
                     case ConsoleColor.Yellow:
                     case ConsoleColor.DarkYellow:
-                        logger.Warning(consoleMessage.MessageSignature ?? consoleMessage.Text, consoleMessage.MessageArgs ?? new object[] { });
+                        logger.Warning(consoleMessage.MessageSignature ?? consoleMessage.Text, (consoleMessage.MessageArgs ?? new object[] { })!);
                         break;
                     case ConsoleColor.Black:
                     case ConsoleColor.White:
@@ -283,7 +283,7 @@ namespace Bam.Console
                     case ConsoleColor.Cyan:
                     case ConsoleColor.DarkCyan:
                     default:
-                        logger.Info(consoleMessage.MessageSignature ?? consoleMessage.Text, consoleMessage.MessageArgs ?? new object[] { });
+                        logger.Info(consoleMessage.MessageSignature ?? consoleMessage.Text, (consoleMessage.MessageArgs ?? new object[] { })!);
                         break;
                 }
             });
@@ -310,7 +310,7 @@ namespace Bam.Console
             }
             else
             {
-                Print(messageSignature, ConsoleColor.Cyan, messageArgs);
+                Print(messageSignature, ConsoleColor.Cyan, messageArgs!);
             }
         }
 
@@ -352,7 +352,7 @@ namespace Bam.Console
             Print(messages.ToArray());
         }
 
-        private static IConsoleMessageHandler _consoleMessageHandler;
+        private static IConsoleMessageHandler _consoleMessageHandler = null!;
         private static readonly object _consoleMessageHandlerLock = new object();
         /// <summary>
         /// Gets or sets the handler used for printing and logging console messages. Defaults to <see cref="DefaultConsoleMessageHandler"/>.
@@ -366,7 +366,7 @@ namespace Bam.Console
             set => _consoleMessageHandler = value;
         }
 
-        private static ConsoleMessageDelegate _printProvider;
+        private static ConsoleMessageDelegate _printProvider = null!;
         private static readonly object _printProviderLock = new object();
         /// <summary>
         /// Gets or sets the delegate used to print console messages. Defaults to the <see cref="ConsoleMessageHandler"/>'s Print method.

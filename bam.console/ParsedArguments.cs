@@ -219,7 +219,7 @@ namespace Bam.Console
         /// <summary>
         /// Gets or sets the message describing the parse result (e.g., error details).
         /// </summary>
-        public string Message { get; set; }
+        public string Message { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the status of the argument parsing operation.
@@ -240,7 +240,7 @@ namespace Bam.Console
         /// <returns>The argument value, or null if not found.</returns>
         public string this[string name]
         {
-            get => parsedArguments.ContainsKey(name) ? parsedArguments[name] : null;
+            get => parsedArguments.ContainsKey(name) ? parsedArguments[name] : null!;
             set => parsedArguments[name] = value;
         }
 
@@ -254,7 +254,7 @@ namespace Bam.Console
         /// </summary>
         public int Length => parsedArguments.Count;
 
-        private static ParsedArguments _current;
+        private static ParsedArguments _current = null!;
         static readonly object _currentLock = new object();
 
         /// <summary>

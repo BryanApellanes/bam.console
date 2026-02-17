@@ -34,7 +34,7 @@ namespace Bam.Console
         /// <returns></returns>
         public static ProcessOutput Run(this string command, Action<string> onStandardOutput, int? timeout = 600000)
         {
-            return command.Run(null, onStandardOutput, onStandardOutput, false, timeout);
+            return command.Run(null!, onStandardOutput, onStandardOutput, false, timeout);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Bam.Console
         /// <returns>The process output.</returns>
         public static ProcessOutput Run(this string command, Action<string> onStandardOut, Action<string> onErrorOut, int? timeout = null)
         {
-            return command.Run(null, onStandardOut, onErrorOut, false, timeout);
+            return command.Run(null!, onStandardOut, onErrorOut, false, timeout);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Bam.Console
         /// <returns>The process output.</returns>
         public static ProcessOutput Run(this string command, Action<string> onStandardOut, Action<string> onErrorOut, bool promptForAdmin = false)
         {
-            return command.Run(null, onStandardOut, onErrorOut, promptForAdmin);
+            return command.Run(null!, onStandardOut, onErrorOut, promptForAdmin);
         }
         /// <summary>
         /// Run the specified command in a separate process
@@ -71,7 +71,7 @@ namespace Bam.Console
         /// <returns></returns>
         public static ProcessOutput Run(this string command, EventHandler onExit, int? timeout)
         {
-            return command.Run(onExit, null, null, false, timeout);
+            return command.Run(onExit, null!, null!, false, timeout);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Bam.Console
         /// <param name="promptForAdmin"></param>
         /// <param name="timeout">The number of milliseconds to block before returning, specify 0 not to block</param>
         /// <returns></returns>
-        public static ProcessOutput Run(this string command, EventHandler onExit, Action<string> onStandardOut = null, Action<string> onErrorOut = null, bool promptForAdmin = false, int? timeout = null)
+        public static ProcessOutput Run(this string command, EventHandler onExit, Action<string>? onStandardOut = null, Action<string>? onErrorOut = null, bool promptForAdmin = false, int? timeout = null)
         {
             GetExeAndArguments(command, out string exe, out string arguments);
 
@@ -101,7 +101,7 @@ namespace Bam.Console
         /// <param name="onExit"></param>
         public static ProcessOutput Run(this string exe, string arguments, EventHandler onExit)
         {
-            return exe.Run(arguments, onExit, null);
+            return exe.Run(arguments, onExit, null!);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Bam.Console
         /// <param name="errorOut">Handler for error output lines.</param>
         /// <param name="timeOut">Timeout in milliseconds.</param>
         /// <returns>The process output.</returns>
-        public static ProcessOutput RunAndWait(this ProcessStartInfo info, Action<string> standardOut = null, Action<string> errorOut = null, int timeOut = 60000)
+        public static ProcessOutput RunAndWait(this ProcessStartInfo info, Action<string>? standardOut = null, Action<string>? errorOut = null, int timeOut = 60000)
         {
             ProcessOutputCollector output = new ProcessOutputCollector(standardOut, errorOut);
             return info.Run(output, timeOut);
@@ -126,10 +126,10 @@ namespace Bam.Console
         /// <param name="standardOut"></param>
         /// <param name="errorOut"></param>
         /// <returns></returns>
-        public static ProcessOutput Start(this string filePath, string arguments = null, Action<string> standardOut = null, Action<string> errorOut = null)
+        public static ProcessOutput Start(this string filePath, string? arguments = null, Action<string>? standardOut = null, Action<string>? errorOut = null)
         {
             ProcessStartInfo startInfo = filePath.ToStartInfo(arguments);
-            return startInfo.Run(standardOut, errorOut);
+            return startInfo.Run(standardOut!, errorOut);
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Bam.Console
         /// <param name="filePath">The path to the executable.</param>
         /// <param name="arguments">Optional command line arguments.</param>
         /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
-        public static ProcessStartInfo ToStartInfo(this string filePath, string arguments = null)
+        public static ProcessStartInfo ToStartInfo(this string filePath, string? arguments = null)
         {
             return filePath.ToStartInfo(new DirectoryInfo("."), arguments);
         }
@@ -150,7 +150,7 @@ namespace Bam.Console
         /// <param name="workingDirectory">The working directory for the process.</param>
         /// <param name="arguments">Optional command line arguments.</param>
         /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
-        public static ProcessStartInfo ToStartInfo(this string filePath, DirectoryInfo workingDirectory, string arguments = null)
+        public static ProcessStartInfo ToStartInfo(this string filePath, DirectoryInfo workingDirectory, string? arguments = null)
         {
             return new FileInfo(filePath).ToStartInfo(workingDirectory, arguments);
         }
@@ -162,7 +162,7 @@ namespace Bam.Console
         /// <param name="workingDirectory">The working directory for the process.</param>
         /// <param name="arguments">Optional command line arguments.</param>
         /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
-        public static ProcessStartInfo ToStartInfo(this FileInfo fileInfo, DirectoryInfo workingDirectory, string arguments = null)
+        public static ProcessStartInfo ToStartInfo(this FileInfo fileInfo, DirectoryInfo workingDirectory, string? arguments = null)
         {
             return new ProcessStartInfo
             {
@@ -184,7 +184,7 @@ namespace Bam.Console
         /// <param name="arguments">The arguments to pass to the command file.</param>
         /// <param name="workingDir">Optional working directory; defaults to the current directory.</param>
         /// <returns>A configured <see cref="ProcessStartInfo"/>.</returns>
-        public static ProcessStartInfo ToCmdStartInfo(this string cmdFilePath, string arguments, DirectoryInfo workingDir = null)
+        public static ProcessStartInfo ToCmdStartInfo(this string cmdFilePath, string arguments, DirectoryInfo? workingDir = null)
         {
             FileInfo cmdFile = new FileInfo(cmdFilePath);
             return cmdFile.ToCmdStartInfo(arguments, workingDir ?? new DirectoryInfo("."));
@@ -211,7 +211,7 @@ namespace Bam.Console
         /// <param name="errorOut">The error out.</param>
         /// <param name="timeOut">The time out.</param>
         /// <returns></returns>
-        public static ProcessOutput RunAndWait(this string command, Action<string> standardOut = null, Action<string> errorOut = null, int timeOut = 60000)
+        public static ProcessOutput RunAndWait(this string command, Action<string>? standardOut = null, Action<string>? errorOut = null, int timeOut = 60000)
         {
             GetExeAndArguments(command, out string exe, out string arguments);
             return exe.Run(arguments, (o, a) => { }, standardOut, errorOut, false, timeOut);
@@ -224,9 +224,9 @@ namespace Bam.Console
         /// <param name="arguments">The arguments.</param>
         /// <param name="onExit">The on exit.</param>
         /// <param name="timeOut">The time out.</param>
-        public static ProcessOutput RunAndWait(this string exe, string arguments, EventHandler onExit = null, int timeOut = 60000)
+        public static ProcessOutput RunAndWait(this string exe, string arguments, EventHandler? onExit = null, int timeOut = 60000)
         {
-            return exe.Run(arguments, onExit, timeOut);
+            return exe.Run(arguments, onExit!, timeOut);
         }
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Bam.Console
         /// <returns></returns>
         public static ProcessOutput Run(this string exe, string arguments, EventHandler onExit, int? timeout)
         {
-            return exe.Run(arguments, onExit, null, null, false, timeout);
+            return exe.Run(arguments, onExit, null!, null!, false, timeout);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace Bam.Console
         /// <param name="promptForAdmin"></param>
         /// <param name="timeout"></param>
         /// <returns></returns>
-        public static ProcessOutput Run(this string exe, string arguments, EventHandler onExit, Action<string> onStandardOut = null, Action<string> onErrorOut = null, bool promptForAdmin = false, int? timeout = null)
+        public static ProcessOutput Run(this string exe, string arguments, EventHandler onExit, Action<string>? onStandardOut = null, Action<string>? onErrorOut = null, bool promptForAdmin = false, int? timeout = null)
         {
             ProcessStartInfo startInfo = ProcessExtensions.CreateStartInfo(promptForAdmin);
             startInfo.FileName = exe;
