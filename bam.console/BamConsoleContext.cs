@@ -358,10 +358,12 @@ File Version: {1}
             FileInfo info = new FileInfo(assembly.Location);
             Message.PrintLine(usageFormat, assemblyVersion, fileVersion, info.Name);
             Thread.Sleep(3);
+            string prefix = ArgumentFormatOptions.Default.Prefix;
+            char separator = ArgumentFormatOptions.Default.ValueSeparator;
             foreach (ArgumentInfo argInfo in ValidArgumentInfo)
             {
-                string valueExample = string.IsNullOrEmpty(argInfo.ValueExample) ? string.Empty : string.Format(":{0}\r\n", argInfo.ValueExample);
-                Message.PrintLine("/{0}{1}\r\n    {2}", argInfo.Name, valueExample, argInfo.Description);
+                string valueExample = string.IsNullOrEmpty(argInfo.ValueExample) ? string.Empty : string.Format("{0}{1}\r\n", separator, argInfo.ValueExample);
+                Message.PrintLine("{0}{1}{2}\r\n    {3}", prefix, argInfo.Name, valueExample, argInfo.Description);
             }
             Thread.Sleep(30);
         }

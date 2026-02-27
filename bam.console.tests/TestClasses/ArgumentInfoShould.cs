@@ -71,11 +71,11 @@ public class ArgumentInfoShould : UnitTestMenuContainer
     [UnitTest]
     public void FromArgsExtractsNames()
     {
-        When.A<ArgumentInfo>("FromArgs extracts names from default format",
+        When.A<ArgumentInfo>("FromArgs extracts names with Posix format",
             () => new ArgumentInfo("placeholder", false),
             (placeholder) =>
             {
-                return ArgumentInfo.FromArgs(new[] { "--name=value", "--flag" });
+                return ArgumentInfo.FromArgs(ArgumentFormatOptions.Posix, new[] { "--name=value", "--flag" });
             })
         .TheTest
         .ShouldPass(because =>

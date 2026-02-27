@@ -19,12 +19,12 @@ public class ArgumentFormatOptionsShould : UnitTestMenuContainer
             if (RuntimeSettings.IsWindows)
             {
                 because.ItsTrue("default prefix is '/' on Windows", result.Prefix == "/");
-                because.ItsTrue("default value separator is '=' on Windows", result.ValueSeparator == '=');
+                because.ItsTrue("default value separator is ':' on Windows", result.ValueSeparator == ':');
             }
             else
             {
                 because.ItsTrue("default prefix is '--' on non-Windows", result.Prefix == "--");
-                because.ItsTrue("default value separator is ':' on non-Windows", result.ValueSeparator == ':');
+                because.ItsTrue("default value separator is '=' on non-Windows", result.ValueSeparator == '=');
             }
         })
         .SoBeHappy()
@@ -142,8 +142,99 @@ public class ArgumentFormatOptionsShould : UnitTestMenuContainer
         .ShouldPass(because =>
         {
             ArgumentFormatOptions result = because.ResultAs<ArgumentFormatOptions>();
-            because.ItsTrue("prefix matches default '--'", result.Prefix == ArgumentFormatOptions.Default.Prefix);
-            because.ItsTrue("separator matches default '='", result.ValueSeparator == ArgumentFormatOptions.Default.ValueSeparator);
+            because.ItsTrue("prefix matches default", result.Prefix == ArgumentFormatOptions.Default.Prefix);
+            because.ItsTrue("separator matches default", result.ValueSeparator == ArgumentFormatOptions.Default.ValueSeparator);
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void PosixStyleHasDoubleDashAndEquals()
+    {
+        When.A<ArgumentFormatOptions>("Posix preset has '--' and '='", () => ArgumentFormatOptions.Posix, (options) =>
+        {
+            return options;
+        })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            ArgumentFormatOptions result = because.ResultAs<ArgumentFormatOptions>();
+            because.ItsTrue("Posix prefix is '--'", result.Prefix == "--");
+            because.ItsTrue("Posix separator is '='", result.ValueSeparator == '=');
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void WindowsStyleHasSlashAndColon()
+    {
+        When.A<ArgumentFormatOptions>("Windows preset has '/' and ':'", () => ArgumentFormatOptions.Windows, (options) =>
+        {
+            return options;
+        })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            ArgumentFormatOptions result = because.ResultAs<ArgumentFormatOptions>();
+            because.ItsTrue("Windows prefix is '/'", result.Prefix == "/");
+            because.ItsTrue("Windows separator is ':'", result.ValueSeparator == ':');
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void PlatformStyleMatchesRuntimePlatform()
+    {
+        When.A<ArgumentFormatOptions>("Platform preset matches runtime", () => ArgumentFormatOptions.Platform, (options) =>
+        {
+            return options;
+        })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            ArgumentFormatOptions result = because.ResultAs<ArgumentFormatOptions>();
+            if (RuntimeSettings.IsWindows)
+            {
+                because.ItsTrue("Platform prefix is '/' on Windows", result.Prefix == "/");
+                because.ItsTrue("Platform separator is ':' on Windows", result.ValueSeparator == ':');
+            }
+            else
+            {
+                because.ItsTrue("Platform prefix is '--' on non-Windows", result.Prefix == "--");
+                because.ItsTrue("Platform separator is '=' on non-Windows", result.ValueSeparator == '=');
+            }
+        })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void ForStyleReturnCorrectOptions()
+    {
+        When.A<ArgumentFormatOptions>("ForStyle returns correct options for each style", (defaultOptions) =>
+        {
+            ArgumentFormatOptions posix = ArgumentFormatOptions.ForStyle(ArgumentStyle.Posix);
+            ArgumentFormatOptions windows = ArgumentFormatOptions.ForStyle(ArgumentStyle.Windows);
+            ArgumentFormatOptions platform = ArgumentFormatOptions.ForStyle(ArgumentStyle.Platform);
+            return new object[] { posix, windows, platform };
+        })
+        .TheTest
+        .ShouldPass(because =>
+        {
+            object[] results = (object[])because.Result;
+            ArgumentFormatOptions posix = (ArgumentFormatOptions)results[0];
+            ArgumentFormatOptions windows = (ArgumentFormatOptions)results[1];
+            ArgumentFormatOptions platform = (ArgumentFormatOptions)results[2];
+
+            because.ItsTrue("ForStyle(Posix) prefix is '--'", posix.Prefix == "--");
+            because.ItsTrue("ForStyle(Posix) separator is '='", posix.ValueSeparator == '=');
+            because.ItsTrue("ForStyle(Windows) prefix is '/'", windows.Prefix == "/");
+            because.ItsTrue("ForStyle(Windows) separator is ':'", windows.ValueSeparator == ':');
+            because.ItsTrue("ForStyle(Platform) prefix matches Platform preset", platform.Prefix == ArgumentFormatOptions.Platform.Prefix);
+            because.ItsTrue("ForStyle(Platform) separator matches Platform preset", platform.ValueSeparator == ArgumentFormatOptions.Platform.ValueSeparator);
         })
         .SoBeHappy()
         .UnlessItFailed();

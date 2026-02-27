@@ -6,12 +6,34 @@ namespace Bam.Console.Tests.TestClasses;
 public class DefaultArgumentParserShould : UnitTestMenuContainer
 {
     [UnitTest]
-    public void ParseWithDefaultOptions()
+    public void ParseWithPosixOptions()
     {
-        When.A<DefaultArgumentParser>("parses with default options", (parser) =>
+        When.A<DefaultArgumentParser>("parses with Posix options",
+            () => new DefaultArgumentParser(ArgumentFormatOptions.Posix),
+            (parser) =>
+            {
+                return parser.ParseArguments(new[] { "--name=value" });
+            })
+        .TheTest
+        .ShouldPass(because =>
         {
-            return parser.ParseArguments(new[] { "--name=value" });
+            IParsedArguments result = because.ResultAs<IParsedArguments>();
+            because.ItsTrue("status is Success", result.Status == ArgumentParseStatus.Success);
+            because.ItsTrue("name has correct value", result["name"] == "value");
         })
+        .SoBeHappy()
+        .UnlessItFailed();
+    }
+
+    [UnitTest]
+    public void ParseWithWindowsOptions()
+    {
+        When.A<DefaultArgumentParser>("parses with Windows options",
+            () => new DefaultArgumentParser(ArgumentFormatOptions.Windows),
+            (parser) =>
+            {
+                return parser.ParseArguments(new[] { "/name:value" });
+            })
         .TheTest
         .ShouldPass(because =>
         {
